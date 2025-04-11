@@ -62,6 +62,17 @@ return [
             ]) : [],
         ],
 
+        'posintern' => [
+        'driver' => 'mysql',
+        'url' => env('DATABASE_URL'),
+        'host' => env('DB_POS_HOST', '127.0.0.1'),
+        'port' => env('DB_POS_PORT', '3306'),
+        'database' => env('DB_POS_DATABASE', 'forge'),
+        'username' => env('DB_POS_USERNAME', 'forge'),
+        'password' => env('DB_POS_PASSWORD', ''),
+        // ... other mysql config
+    ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),

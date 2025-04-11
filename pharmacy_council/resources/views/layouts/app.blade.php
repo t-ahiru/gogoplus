@@ -17,60 +17,67 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <body class="font-sans antialiased">
-        <div class="flex min-h-screen">
+        <div class="flex min-h-screen" 
+             x-data="{ sidebarOpen: window.innerWidth > 768 }" 
+             @toggle-sidebar.window="sidebarOpen = !sidebarOpen"
+             @resize.window="sidebarOpen = window.innerWidth > 768">
+            
             <!-- Sidebar -->
-            <aside class="w-64 bg-gray-900 text-white flex flex-col">
+            <aside x-show="sidebarOpen"
+                   x-transition:enter="transition ease-in-out duration-300 transform"
+                   x-transition:enter-start="-translate-x-full"
+                   x-transition:enter-end="translate-x-0"
+                   x-transition:leave="transition ease-in-out duration-300 transform"
+                   x-transition:leave-start="translate-x-0"
+                   x-transition:leave-end="-translate-x-full"
+                   class="w-64 bg-gray-900 text-white flex flex-col fixed h-full z-10">
                 <!-- Sidebar Header -->
                 <div class="p-4 border-b border-blue-800">
                     <h1 class="text-xl font-semibold">Pharmacy Council</h1>
                 </div>
                 
-                
-
                 <!-- Sidebar Navigation -->
                 <nav class="flex-1 p-4">
                     <ul class="space-y-2">
                         <li>
                             <a href="{{ route('dashboard') }}" class="flex items-center p-2 rounded hover:bg-blue-700 transition-colors {{ request()->routeIs('dashboard') ? 'bg-blue-700' : '' }}">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v10m6-10v10m-6-10h6"></path>
-                                </svg>
+                                <i class="fas fa-chart-line mr-2"></i>
                                 Dashboard
                             </a>
                         </li>
+                        <!-- Change this in app.blade.php -->
                         <li>
-                            <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('users.*') ? 'bg-blue-700' : '' }}">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                                </svg>
-                                Manage Users
+                            <a href="{{ route('pharmacies.index') }}" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('pharmacies.*') ? 'bg-blue-700' : '' }}">
+                                <i class="fas fa-users mr-2"></i>
+                                    Manage Users
                             </a>
                         </li>
                         <li>
                             <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('inventory.*') ? 'bg-blue-700' : '' }}">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                </svg>
-                                Inventory
+                                <i class="fas fa-box mr-2"></i> Inventory
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('stock.*') ? 'bg-blue-700' : '' }}">
+                                <i class="fas fa-warehouse mr-2"></i>Stocks
                             </a>
                         </li>
                         <li>
                             <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('orders.*') ? 'bg-blue-700' : '' }}">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 14" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                </svg>
-                                Orders
+                                <i class="fas fa-file-invoice mr-2"></i>Orders
                             </a>
                         </li>
                         <li>
                             <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('settings.*') ? 'bg-blue-700' : '' }}">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                Settings
+                                <i class="fas fa-cog mr-2"></i> Settings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('activity.*') ? 'bg-blue-700' : '' }}">
+                                <i class="fas fa-history mr-2"></i> Activity Log
                             </a>
                         </li>
                     </ul>
@@ -91,7 +98,9 @@
             </aside>
 
             <!-- Main Content -->
-            <div id="main-content" class="flex-1 flex flex-col transition-all duration-300 ease-in-out">
+            <div id="main-content" 
+                 x-bind:class="{ 'md:ml-64': sidebarOpen }"
+                 class="flex-1 flex flex-col transition-all duration-300 ease-in-out">
                 <!-- Navigation -->
                 @include('layouts.navigation')
 
@@ -110,5 +119,12 @@
                 </main>
             </div>
         </div>
+
+        <script>
+            // Handle window resize events
+            window.addEventListener('resize', function() {
+                window.dispatchEvent(new CustomEvent('resize'));
+            });
+        </script>
     </body>
 </html>
