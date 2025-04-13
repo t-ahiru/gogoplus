@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container mx-auto p-6">
-        <h1 class="text-xl font-bold mb-4">Council Users</h1>
+        <h1 class="text-xl font-bold mb-4">APP USERS</h1>
 
         <!-- Success Message -->
         @if (session('success'))
@@ -36,7 +36,7 @@
                         <td class="px-4 py-2">{{ $index + 1 }}</td>
                         <td class="px-4 py-2">{{ $user->name }}</td>
                         <td class="px-4 py-2">{{ $user->email }}</td>
-                        <td class="px-4 py-2">{{ $user->role_id == 1 ? 'Council User' : 'Admin' }}</td>
+                        <td class="px-4 py-2">{{ $user->role_id == 1 ? 'Admin' : 'Member' }}</td>
                         <td class="px-4 py-2">
                             <form action="{{ route('council_user.destroy', $user->id) }}" method="POST"
                                   onsubmit="return confirm('Are you sure you want to delete this user?');">
