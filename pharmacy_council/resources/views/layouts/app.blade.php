@@ -78,11 +78,16 @@
                                      @endforeach
                              </ul>
                             </li>
-                        <li>
-                            <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('council_user.*') ? 'bg-blue-700' : '' }}">
-                                <i class="fas fa-users mr-2"></i> Council User
-                            </a>
-                        </li>
+                       <!-- Council User (only for role_id === 1) -->
+@php $user = Auth::user(); @endphp
+@if ($user && $user->role_id === 1)
+    <li>
+        <a href="{{ route('council_user.index') }}"
+           class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('council_user.*') ? 'bg-blue-700' : '' }}">
+            <i class="fas fa-users mr-2"></i> Manage Users
+        </a>
+    </li>
+@endif
                         
                         <li>
                             <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('settings.*') ? 'bg-blue-700' : '' }}">
@@ -96,6 +101,7 @@
                         </li>
                     </ul>
                 </nav>
+ 
 
                 <!-- Sidebar Footer -->
                 <div class="p-4 border-t border-blue-800">
