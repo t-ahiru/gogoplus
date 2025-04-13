@@ -167,7 +167,7 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm text-gray-800">
-                                        <span class="font-semibold">Dr. Sarah Johnson</span> approved a new pharmacy registration
+                                        <span class="font-semibold">Dr. Rockson Emmanuel</span> approved a new pharmacy registration
                                     </p>
                                     <p class="text-xs text-gray-500 mt-1">2 hours ago</p>
                                 </div>
