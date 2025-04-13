@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PharmacyController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,31 +12,27 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-// Pharmacy Monitor Routes
-// Route::prefix('pharmacy-monitor')->middleware(['auth', 'role:admin'])->group(function() {
-//     Route::get('/dashboard', [PharmacyMonitorController::class, 'dashboard'])->name('pharmacy-monitor.dashboard');
-//     Route::get('/sales-report', [PharmacyMonitorController::class, 'salesReport'])->name('pharmacy-monitor.sales-report');
-//     Route::get('/product-report', [PharmacyMonitorController::class, 'productReport'])->name('pharmacy-monitor.product-report');
-// });
-
-// Add this to your routes/web.php
-Route::middleware(['auth'])->group(function () {
-    Route::get('/pharmacies', function () {
-        // Assuming you have a Pharmacy model and want to show all pharmacies
-        $pharmacies = App\Models\Pharmacy::all();
-        return view('pharmacies.index', ['pharmacies' => $pharmacies]);
-    })->name('pharmacies.index');
     
-    Route::get('/pharmacies/{pharmacy}/activities', function (App\Models\Pharmacy $pharmacy) {
-        return view('pharmacies.activities', ['pharmacy' => $pharmacy]);
-    })->name('pharmacies.activities');
-});
+    // Profile Routes
+    Route::middleware('auth')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
+    // Pharmacy Management Routes
+    Route::prefix('manage-pharmacy')->group(function () {
+        // Main pharmacy management
+        Route::get('/', [PharmacyController::class, 'index'])->name('manage-pharmacy.index');
+        Route::post('/', [PharmacyController::class, 'store'])->name('manage-pharmacy.store');
+        
+        // Individual pharmacy operations
+        Route::prefix('{pharmacy}')->group(function () {
+            Route::get('/', [PharmacyController::class, 'show'])->name('manage-pharmacy.show');
+            Route::get('/users', [PharmacyController::class, 'manageUsers'])->name('manage-pharmacy.users');
+            Route::get('/users/{user}/activity', [PharmacyController::class, 
+            'trackActivity'])->name('manage-pharmacy.users.activity');
+        });
+    });
+
 
 require __DIR__.'/auth.php';

@@ -15,15 +15,13 @@ class Pharmacy extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'license_number',
-        'address',
-        'location',
-        'contact_phone',
-        'contact_email',
-        'owner_name',
-        'registration_date',
-        'status', // e.g., 'active', 'suspended', 'inactive'
+            'name',
+            'license_number',
+            'address',
+            'location',
+            'contact_phone',
+            'contact_email',
+            'database_connection',
     ];
 
     /**
@@ -46,35 +44,7 @@ class Pharmacy extends Model
     /**
      * Get the inventory items for this pharmacy.
      */
-    public function inventoryItems()
-    {
-        return $this->hasMany(InventoryItem::class);
-    }
-
-    /**
-     * Get the orders for this pharmacy.
-     */
-    public function orders()
-    {
-        return $this->hasMany(Order::class);
-    }
-
-    /**
-     * Get the activities/logs for this pharmacy.
-     */
-    public function activities()
-    {
-        return $this->hasMany(ActivityLog::class);
-    }
-
-    /**
-     * Scope a query to only include active pharmacies.
-     */
-    public function scopeActive($query)
-    {
-        return $query->where('status', 'active');
-    }
-
+ 
     /**
      * Get the pharmacy's full address with location.
      */

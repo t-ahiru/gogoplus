@@ -48,28 +48,42 @@
                                 Dashboard
                             </a>
                         </li>
-                        <!-- Change this in app.blade.php -->
+                        <!-- Updated Manage Pharmacies Section with Submenu -->
+                        <li x-data="{ open: false }" 
+                            @mouseenter="open = true" 
+                            @mouseleave="open = false">
+                                <a href="{{ route('manage-pharmacy.index') }}" 
+                                class="flex items-center p-2 rounded hover:bg-blue-700 transition-colors {{ request()->routeIs('manage-pharmacy.*') ? 'bg-blue-700' : '' }}">
+                                    <i class="fas fa-prescription-bottle-alt mr-2"></i>
+                                         Manage Pharmacy 
+                                <i class="fas fa-chevron-down ml-auto" x-bind:class="{ 'fa-chevron-up': open, 'fa-chevron-down': !open }"></i>
+                             </a>
+                            <!-- Submenu for Pharmacies -->
+                            <ul x-show="open" 
+                            x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 scale-95"
+                                x-transition:enter-end="opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                x-transition:leave-end="opacity-0 scale-95"
+                                class="mt-1 space-y-1 pl-4">
+                                    @foreach (\App\Models\Pharmacy::all() as $pharmacy)
+                                <li>
+                                     <a href="{{ route('manage-pharmacy.show', $pharmacy->id) }}" 
+                                        class="flex items-center p-2 rounded hover:bg-blue-600 transition-colors {{ request()->routeIs('manage-pharmacy.show') && request()->segment(2) == $pharmacy->id ? 'bg-blue-600' : '' }}">
+                                        <i class="fas fa-store mr-2"></i>
+                                        {{ $pharmacy->name }}
+                                    </a>
+                                </li>
+                                     @endforeach
+                             </ul>
+                            </li>
                         <li>
-                            <a href="{{ route('pharmacies.index') }}" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('pharmacies.*') ? 'bg-blue-700' : '' }}">
-                                <i class="fas fa-users mr-2"></i>
-                                    Manage Users
+                            <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('council_user.*') ? 'bg-blue-700' : '' }}">
+                                <i class="fas fa-users mr-2"></i> Council User
                             </a>
                         </li>
-                        <li>
-                            <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('inventory.*') ? 'bg-blue-700' : '' }}">
-                                <i class="fas fa-box mr-2"></i> Inventory
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('stock.*') ? 'bg-blue-700' : '' }}">
-                                <i class="fas fa-warehouse mr-2"></i>Stocks
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('orders.*') ? 'bg-blue-700' : '' }}">
-                                <i class="fas fa-file-invoice mr-2"></i>Orders
-                            </a>
-                        </li>
+                        
                         <li>
                             <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('settings.*') ? 'bg-blue-700' : '' }}">
                                 <i class="fas fa-cog mr-2"></i> Settings
@@ -115,7 +129,7 @@
 
                 <!-- Page Content -->
                 <main class="flex-1 bg-gray-100 p-6">
-                    {{ $slot }}
+                    @yield('content')
                 </main>
             </div>
         </div>

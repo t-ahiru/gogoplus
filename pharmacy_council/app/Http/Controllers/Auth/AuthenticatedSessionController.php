@@ -23,7 +23,7 @@ class AuthenticatedSessionController extends Controller
         if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             $request->session()->regenerate();
             $user = Auth::user();
-            return redirect()->intended($user->isCouncilAdmin() ? '/council/dashboard' : '/pharmacy/dashboard');
+            return redirect()->intended($user->isCouncilAdmin() ? '/dashboard' : '/pharmacy/dashboard');
         }
 
         return back()->withErrors([
