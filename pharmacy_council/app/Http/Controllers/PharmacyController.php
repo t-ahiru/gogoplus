@@ -11,7 +11,7 @@ class PharmacyController extends Controller
 {
     public function index()
     {
-        $pharmacies = Pharmacy::all();
+        $pharmacies = Pharmacy::paginate(10); // 10 items per page
         return view('manage-pharmacy', compact('pharmacies'));
     }
 

@@ -9,11 +9,14 @@ use Illuminate\Support\Facades\Hash;
 class CouncilUserController extends Controller
 {
     public function index()
-    {
-        // Fetch users with role_id 1 or 2 OR 5
-        $councilUsers = User::whereIn('role_id', [1,2,3,4,5])->get();
-        return view('council_user.index', compact('councilUsers'));
-    }
+{
+    // Fetch paginated users with role_id 1, 2, 3, 4, or 5
+    $councilUsers = User::whereIn('role_id', [1, 2, 3, 4, 5])
+        ->orderBy('name') // Sort alphabetically by name
+        ->paginate(15); // 15 users per page
+
+    return view('council_user.index', compact('councilUsers'));
+}
 
     public function create()
     {
