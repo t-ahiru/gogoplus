@@ -13,50 +13,87 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Registered Pharmacies Card -->
-            <div class="bg-white shadow rounded-lg">
-                <div class="px-4 py-4 bg-gray-800 rounded-t-lg">
-                    <h3 class="text-lg font-medium text-white">
-                        <i class="fas fa-store-alt mr-2"></i>Registered Pharmacies
-                    </h3>
+            <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+                <!-- Card Header with Search -->
+                <div class="px-6 py-4 bg-gray-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="flex items-center">
+                        <div class="p-2 rounded-lg bg-gray-700 mr-3">
+                            <i class="fas fa-store-alt text-blue-400 text-lg"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-white">Registered Pharmacies</h3>
+                    </div>
+                    
+                    <!-- Search Form -->
+                    <form method="GET" action="{{ route('manage-pharmacy.index') }}" class="w-full sm:w-1/3">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                name="search" 
+                                id="search" 
+                                class="pl-10 w-full rounded-lg border-0 bg-gray-700 text-white placeholder-gray-300 focus:ring-2 focus:ring-blue-400 focus:bg-gray-600 transition-all duration-200 py-2"
+                                placeholder="Search..."
+                                value="{{ request('search') }}"
+                            >
+                            @if(request('search'))
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <a href="{{ route('manage-pharmacy.index') }}" class="text-gray-300 hover:text-white transition-colors">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </div>
+                            @endif
+                        </div>
+                    </form>
                 </div>
+            
+                <!-- Card Body -->
                 <div class="p-4">
                     @if ($pharmacies->isEmpty())
-                        <div class="text-center py-4">
-                            <i class="fas fa-info-circle text-blue-400 text-4xl mb-2"></i>
-                            <p class="text-gray-500">No pharmacies registered yet.</p>
+                        <div class="text-center py-8">
+                            <div class="mx-auto w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-3">
+                                <i class="fas fa-info-circle text-blue-500 text-2xl"></i>
+                            </div>
+                            <p class="text-gray-500 font-medium">No pharmacies found</p>
+                            @if(request('search'))
+                            <p class="text-sm text-gray-400 mt-1">Try a different search term</p>
+                            @endif
                         </div>
                     @else
-                        <ul class="divide-y divide-gray-200">
+                        <ul class="divide-y divide-gray-100">
                             @foreach ($pharmacies as $pharmacy)
-                                <li class="py-3 hover:bg-gray-50">
-                                    <a href="{{ route('manage-pharmacy.show', $pharmacy->id) }}" class="block">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                                    <i class="fas fa-clinic-medical text-blue-500"></i>
-                                                </div>
-                                                <div class="ml-3">
-                                                    <p class="text-sm font-medium text-gray-800">{{ $pharmacy->name }}</p>
-                                                    <p class="text-xs text-gray-500">{{ $pharmacy->location }}</p>
-                                                </div>
+                            <li class="py-3 hover:bg-gray-50 transition-colors duration-150">
+                                <a href="{{ route('manage-pharmacy.show', $pharmacy->id) }}" class="block px-2">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center min-w-0">
+                                            <div class="flex-shrink-0 h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center">
+                                                <i class="fas fa-clinic-medical text-blue-500"></i>
                                             </div>
-                                            <div class="text-gray-400">
-                                                <i class="fas fa-chevron-right text-sm"></i>
+                                            <div class="ml-4 truncate">
+                                                <p class="text-sm font-semibold text-gray-800 truncate">{{ $pharmacy->name }}</p>
+                                                <div class="flex items-center mt-1">
+                                                    <i class="fas fa-map-marker-alt text-gray-400 text-xs mr-1"></i>
+                                                    <p class="text-xs text-gray-500 truncate">{{ $pharmacy->location }}</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </a>
-                                </li>
+                                        <div class="text-gray-400 hover:text-gray-600 transition-colors">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
                             @endforeach
                         </ul>
                         
-                        <!-- Pagination Links -->
-                        <div class="mt-4 border-t border-gray-200 pt-3">
-                            {{ $pharmacies->links() }}
+                        <!-- Pagination -->
+                        <div class="mt-4 border-t border-gray-100 pt-4 px-2">
+                            {{ $pharmacies->appends(['search' => request('search')])->links() }}
                         </div>
                     @endif
                 </div>
             </div>
-
             <!-- Add New Pharmacy Card -->
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-4 bg-gray-800 rounded-t-lg">
@@ -188,4 +225,24 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    // Debounce function to prevent too many requests
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    // Instant search with debouncing
+    document.getElementById('search').addEventListener('input', debounce(function(e) {
+        if (this.value.length > 2 || this.value.length === 0) {
+            this.form.submit();
+        }
+    }, 500));
+</script>
 @endsection

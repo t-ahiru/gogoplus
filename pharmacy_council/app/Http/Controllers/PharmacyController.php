@@ -9,11 +9,20 @@ use Illuminate\Support\Facades\Artisan;
 
 class PharmacyController extends Controller
 {
-    public function index()
-    {
-        $pharmacies = Pharmacy::paginate(10); // 10 items per page
-        return view('manage-pharmacy', compact('pharmacies'));
-    }
+   public function index(Request $request)
+{
+    $search = $request->input('search');
+    
+    $pharmacies = Pharmacy::when($search, function ($query, $search) {
+            return $query->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('location', 'like', '%'.$search.'%')
+                        ->orWhere('license_number', 'like', '%'.$search.'%');
+        })
+        ->orderBy('name')
+        ->paginate(5);
+
+    return view('manage-pharmacy', compact('pharmacies'));
+}
 
     public function manageUsers(Pharmacy $pharmacy)
     {
@@ -30,7 +39,6 @@ class PharmacyController extends Controller
 
     return view('pharmacy-users', compact('pharmacy', 'users'));
     }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -76,8 +84,10 @@ try {
     Artisan::call('migrate', [
         '--database' => $connectionName,
         '--path' => [
-            'database/migrations/2014_10_12_000000_create_roles_table.php',
-            'database/migrations/2014_10_12_000000_create_users_table.php',
+            'database/migrations/2025_04_03_014118_create_roles_table',
+            'database/migrations/0001_01_01_000000_create_users_table',
+            'database/migrations/2025_04_03_034523_add_fields_to_users_table',
+            'database/migrations/2025_04_12_163639_add_description_to_roles_table'
             // Add other migrations in dependency order
         ],
         '--force' => true
