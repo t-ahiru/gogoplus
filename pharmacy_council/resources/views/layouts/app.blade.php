@@ -77,6 +77,13 @@
                                 <i class="fas fa-history mr-2"></i> Activity Log
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('drug_search.search') }}"
+                               class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('drug_search.*') ? 'bg-blue-700' : '' }}">
+                                <i class="fas fa-search mr-2"></i> Search Drug
+                            </a>
+                        </li>
+                        
                     </ul>
                 </nav>
  
