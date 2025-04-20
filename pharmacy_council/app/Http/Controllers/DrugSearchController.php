@@ -9,19 +9,24 @@ use Illuminate\Support\Facades\Session;
 class DrugSearchController extends Controller
 {
 
+
     public function search(Request $request)
     {
         $query = $request->input('query');
         $drugs = collect(); // Empty collection by default
-
+        $perPage = 10; // Number of items per page
+    
         if (!empty($query)) {
             $drugs = Drug::with('availability')
-                ->where('name', 'LIKE', "%{$query}%")
-                ->orWhere('generic_name', 'LIKE', "%{$query}%")
-                ->orWhere('drug_code', 'LIKE', "%{$query}%")
                 ->where('is_active', 1)
-                ->get();
-
+                ->where(function($q) use ($query) {
+                    $q->where('name', 'LIKE', "%{$query}%")
+                      ->orWhere('generic_name', 'LIKE', "%{$query}%")
+                      ->orWhere('drug_code', 'LIKE', "%{$query}%");
+                })
+                ->paginate($perPage)
+                ->appends(['query' => $query]);
+    
             // Store query in session for search history
             $searchHistory = Session::get('drug_search_history', []);
             if (!in_array($query, $searchHistory)) {
@@ -29,10 +34,9 @@ class DrugSearchController extends Controller
                 Session::put('drug_search_history', $searchHistory);
             }
         }
-
+    
         return view('drugs.search', compact('drugs', 'query'));
     }
-
     public function history(Request $request)
     {
         $searchHistory = Session::get('drug_search_history', []);

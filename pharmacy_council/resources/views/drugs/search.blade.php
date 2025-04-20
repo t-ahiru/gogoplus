@@ -1,4 +1,3 @@
-<!-- resources/views/drug_search/search.blade.php -->
 @extends('layouts.app')
 
 @section('content')
@@ -27,8 +26,12 @@
 
         <!-- Search Results or Prompt -->
         @if(!empty($query) && $drugs->isNotEmpty())
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Search Results for "{{ $query }}"</h3>
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Search Results for "{{ $query }}"</h3>
+                    <p class="text-gray-600 mb-4">Showing {{ $drugs->firstItem() }} to {{ $drugs->lastItem() }} of {{ $drugs->total() }} results</p>
+                </div>
+
                 <div class="overflow-x-auto">
                     <table class="w-full border-collapse">
                         <thead>
@@ -36,36 +39,64 @@
                                 <th class="px-4 py-3 text-left">Drug Code</th>
                                 <th class="px-4 py-3 text-left">Name</th>
                                 <th class="px-4 py-3 text-left">Generic Name</th>
-                                <th class="px-4 py-3 text-left">Available Pharmacies</th>
+                                <th class="px-4 py-3 text-left">Availability Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             @foreach($drugs as $drug)
-                                <tr class="hover:bg-gray-50">
+                                <tr class="hover:bg-gray-50 group">
                                     <td class="px-4 py-3">{{ $drug->drug_code }}</td>
-                                    <td class="px-4 py-3">{{ $drug->name }}</td>
+                                    <td class="px-4 py-3 font-medium">{{ $drug->name }}</td>
                                     <td class="px-4 py-3">{{ $drug->generic_name ?? 'N/A' }}</td>
                                     <td class="px-4 py-3">
                                         @if($drug->availability->isNotEmpty())
-                                            <ul class="space-y-1">
-                                                @foreach($drug->availability as $avail)
-                                                    <li class="flex items-start">
-                                                        <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2">Pharmacy {{ $avail->pharmacy_id }}</span>
-                                                        <span class="text-gray-700">{{ $avail->stock_quantity }} units</span>
-                                                        @if($avail->last_updated)
-                                                            <span class="text-gray-500 text-sm ml-2">(Last stocked: {{ $avail->last_updated->format('d/m/Y H:i') }})</span>
-                                                        @endif
-                                                    </li>
-                                                @endforeach
-                                            </ul>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                Available in {{ $drug->availability->count() }} pharmacies
+                                            </span>
                                         @else
-                                            <span class="text-gray-500 italic">Not available in any pharmacy</span>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                Not available
+                                            </span>
                                         @endif
                                     </td>
                                 </tr>
+                                <!-- Expanded row for pharmacy details -->
+                                @if($drug->availability->isNotEmpty())
+                                    <tr class="bg-gray-50">
+                                        <td colspan="4" class="px-4 py-3">
+                                            <div class="ml-8">
+                                                <h4 class="font-medium text-gray-700 mb-2">Available in these pharmacies:</h4>
+                                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                    @foreach($drug->availability as $avail)
+                                                        <div class="border border-gray-200 rounded-lg p-3 hover:bg-blue-50 transition-colors">
+                                                            <div class="flex justify-between items-start">
+                                                                <div>
+                                                                    <h5 class="font-medium text-gray-800">Pharmacy_{{ $avail->pharmacy_id }}</h5>
+                                                                    <p class="text-sm text-gray-600 mt-1">
+                                                                        <span class="font-medium">{{ $avail->stock_quantity }}</span> units in stock
+                                                                    </p>
+                                                                </div>
+                                                                @if($avail->last_updated)
+                                                                    <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                                                        Updated: {{ $avail->last_updated->format('M d, Y H:i') }}
+                                                                    </span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="px-6 py-4 border-t border-gray-200">
+                    {{ $drugs->appends(['query' => $query])->links() }}
                 </div>
             </div>
         @elseif(!empty($query))
