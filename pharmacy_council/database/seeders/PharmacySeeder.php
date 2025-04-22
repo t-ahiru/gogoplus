@@ -21,6 +21,10 @@ class PharmacySeeder extends Seeder
                 'contact_phone' => '123-456-7890',
                 'contact_email' => 'pharmacy1@example.com',
                 'database_connection' => 'pharmacy1',
+                'api_endpoint' => 'https://pharmacy1-api.free.beeceptor.com/data',
+                'api_key' => 'test-key-1',
+                'api_status' => 'unknown',
+                'last_api_request_at' => null,
             ],
             [
                 'name' => 'Pharmacy 2',
@@ -30,6 +34,10 @@ class PharmacySeeder extends Seeder
                 'contact_phone' => '234-567-8901',
                 'contact_email' => 'pharmacy2@example.com',
                 'database_connection' => 'pharmacy2',
+                'api_endpoint' => 'https://pharmacy2-api.free.beeceptor.com/data',
+                'api_key' => 'test-key-2',
+                'api_status' => 'unknown',
+                'last_api_request_at' => null,
             ],
             [
                 'name' => 'Pharmacy 3',
@@ -39,6 +47,10 @@ class PharmacySeeder extends Seeder
                 'contact_phone' => '345-678-9012',
                 'contact_email' => 'pharmacy3@example.com',
                 'database_connection' => 'pharmacy3',
+                'api_endpoint' => null, // No API configured for testing failure cases
+                'api_key' => null,
+                'api_status' => 'unknown',
+                'last_api_request_at' => null,
             ],
             [
                 'name' => 'Pharmacy 4',
@@ -48,6 +60,10 @@ class PharmacySeeder extends Seeder
                 'contact_phone' => '456-789-0123',
                 'contact_email' => 'pharmacy4@example.com',
                 'database_connection' => 'pharmacy4',
+                'api_endpoint' => 'https://pharmacy4-api.free.beeceptor.com/data',
+                'api_key' => 'test-key-4',
+                'api_status' => 'unknown',
+                'last_api_request_at' => null,
             ],
             [
                 'name' => 'Pharmacy 5',
@@ -57,6 +73,10 @@ class PharmacySeeder extends Seeder
                 'contact_phone' => '567-890-1234',
                 'contact_email' => 'pharmacy5@example.com',
                 'database_connection' => 'pharmacy5',
+                'api_endpoint' => 'https://pharmacy5-api.free.beeceptor.com/data',
+                'api_key' => 'test-key-5',
+                'api_status' => 'unknown',
+                'last_api_request_at' => null,
             ],
         ];
 

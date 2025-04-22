@@ -15,13 +15,17 @@ class Pharmacy extends Model
      * @var array
      */
     protected $fillable = [
-            'name',
-            'license_number',
-            'address',
-            'location',
-            'contact_phone',
-            'contact_email',
-            'database_connection',
+        'name',
+        'license_number',
+        'address',
+        'location',
+        'contact_phone',
+        'contact_email',
+        'database_connection',
+        'api_endpoint',
+        'api_key',
+        'api_status',
+        'last_api_request_at',
     ];
 
     /**
@@ -31,6 +35,7 @@ class Pharmacy extends Model
      */
     protected $casts = [
         'registration_date' => 'date',
+        'last_api_request_at' => 'datetime',
     ];
 
     /**
@@ -42,9 +47,13 @@ class Pharmacy extends Model
     }
 
     /**
-     * Get the inventory items for this pharmacy.
+     * Get the data requests associated with this pharmacy.
      */
- 
+    public function dataRequests()
+    {
+        return $this->hasMany(DataRequest::class);
+    }
+
     /**
      * Get the pharmacy's full address with location.
      */
@@ -59,5 +68,26 @@ class Pharmacy extends Model
     public function getContactInfoAttribute()
     {
         return "Phone: {$this->contact_phone}, Email: {$this->contact_email}";
+    }
+
+    /**
+     * Check if the pharmacy has a configured API.
+     *
+     * @return bool
+     */
+    public function hasApiConfigured(): bool
+    {
+        return !empty($this->api_endpoint) && !empty($this->api_key);
+    }
+
+    /**
+     * Scope a query to only include pharmacies with active APIs.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithActiveApi($query)
+    {
+        return $query->where('api_status', 'active');
     }
 }

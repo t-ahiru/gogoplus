@@ -56,37 +56,49 @@
                                 Manage Pharmacy
                             </a>
                         </li>
-                       <!-- Council User (only for role_id === 1) -->
-                            @php $user = Auth::user(); @endphp
-                            @if ($user && $user->role_id === 1)
-                        <li>
-                    <a href="{{ route('council_user.index') }}"
-                        class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('council_user.*') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-users mr-2"></i> Manage Users
-                        </a>
-                    </li>
-                    @endif
+                        <!-- Council User (only for role_id === 1) -->
+                        @php $user = Auth::user(); @endphp
+                        @if ($user && $user->role_id === 1)
+                            <li>
+                                <a href="{{ route('council_user.index') }}"
+                                   class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('council_user.*') ? 'bg-blue-700' : '' }}">
+                                    <i class="fas fa-users mr-2"></i>
+                                    Manage Users
+                                </a>
+                            </li>
+                        @endif
+                        <!-- Data Requests (only for role_id === 1) -->
+                        @if ($user && $user->role_id === 1)
+                            <li>
+                                <a href="{{ route('data_requests.create') }}"
+                                   class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('data_requests.*') ? 'bg-blue-700' : '' }}">
+                                    <i class="fas fa-file-download mr-2"></i>
+                                    Request Data
+                                </a>
+                            </li>
+                        @endif
                         
                         <li>
                             <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('settings.*') ? 'bg-blue-700' : '' }}">
-                                <i class="fas fa-cog mr-2"></i> Settings
+                                <i class="fas fa-cog mr-2"></i>
+                                Settings
                             </a>
                         </li>
                         <li>
                             <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('activity.*') ? 'bg-blue-700' : '' }}">
-                                <i class="fas fa-history mr-2"></i> Activity Log
+                                <i class="fas fa-history mr-2"></i>
+                                Activity Log
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('drug_search.search') }}"
                                class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('drug_search.*') ? 'bg-blue-700' : '' }}">
-                                <i class="fas fa-search mr-2"></i> Search Drug
+                                <i class="fas fa-search mr-2"></i>
+                                Search Drug
                             </a>
                         </li>
-                        
                     </ul>
                 </nav>
- 
 
                 <!-- Sidebar Footer -->
                 <div class="p-4 border-t border-blue-800">

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PharmacyController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DataRequestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CouncilUserController;
 use App\Http\Controllers\DrugSearchController;
@@ -32,6 +32,11 @@ Route::get('/dashboard', function () {
     Route::get('/drugs/search', [DrugSearchController::class, 'search'])->name('drug_search.search');
     Route::get('/drugs/search/history', [DrugSearchController::class, 'history'])->name('drug_search.history');
     Route::post('/drugs/search/history/clear', [DrugSearchController::class, 'clearHistory'])->name('drug_search.clear_history');
+
+            //Data Requests 
+            Route::get('/data-requests', [DataRequestController::class, 'index'])->name('data_requests.index');
+            Route::get('/data-requests/create', [DataRequestController::class, 'create'])->name('data_requests.create');
+            Route::post('/data-requests', [DataRequestController::class, 'sendRequest'])->name('data_requests.send');
 
     });
 
