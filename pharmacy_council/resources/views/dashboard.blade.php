@@ -126,7 +126,7 @@
                     </a>
 
                     <!-- Add New User -->
-                    <a href="#" class="group flex items-start p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all duration-200 hover:-translate-y-1">
+                    <a href="{{ route('council_user.index') }}" class="group flex items-start p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all duration-200 hover:-translate-y-1">
                         <div class="flex-shrink-0 bg-green-100 group-hover:bg-green-200 p-3 rounded-lg shadow-sm">
                             <i class="fas fa-user-plus text-green-600 text-lg"></i>
                         </div>
@@ -138,16 +138,20 @@
                     </a>
 
                     <!-- Generate Reports -->
-                    <a href="#" class="group flex items-start p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-all duration-200 hover:-translate-y-1">
-                        <div class="flex-shrink-0 bg-purple-100 group-hover:bg-purple-200 p-3 rounded-lg shadow-sm">
-                            <i class="fas fa-file-alt text-purple-600 text-lg"></i>
-                        </div>
-                        <div class="ml-4">
-                            <h4 class="text-sm font-semibold text-gray-900 group-hover:text-purple-700">Generate Reports</h4>
-                            <p class="mt-1 text-xs text-gray-500">Create compliance and activity reports</p>
-                            <span class="mt-2 inline-block text-xs font-medium text-purple-600">Go to module →</span>
-                        </div>
-                    </a>
+                    @auth
+    @if(auth()->user()->role_id === 1)
+        <a href="{{ route('data_requests.create') }}" class="group flex items-start p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-all duration-200 hover:-translate-y-1">
+            <div class="flex-shrink-0 bg-purple-100 group-hover:bg-purple-200 p-3 rounded-lg shadow-sm">
+                <i class="fas fa-file-alt text-purple-600 text-lg"></i>
+            </div>
+            <div class="ml-4">
+                <h4 class="text-sm font-semibold text-gray-900 group-hover:text-purple-700">Request Data</h4>
+                <p class="mt-1 text-xs text-gray-500">Receive and Analyze data from Pharmacies </p>
+                <span class="mt-2 inline-block text-xs font-medium text-purple-600">Go to module →</span>
+            </div>
+        </a>
+    @endif
+@endauth
                 </div>
             </div>
 

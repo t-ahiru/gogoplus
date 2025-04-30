@@ -1,4 +1,5 @@
 <!-- resources/views/layouts/app.blade.php -->
+
 @props(['header'])
 
 <!DOCTYPE html>
@@ -17,6 +18,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <body class="font-sans antialiased">
@@ -67,6 +69,14 @@
                                 </a>
                             </li>
                         @endif
+
+                        <li>
+                            <a href="{{ route('drug_search.search') }}"
+                               class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('drug_search.*') ? 'bg-blue-700' : '' }}">
+                                <i class="fas fa-search mr-2"></i>
+                                Search Drug
+                            </a>
+                        </li>
                         <!-- Data Requests (only for role_id === 1) -->
                         @if ($user && $user->role_id === 1)
                             <li>
@@ -77,7 +87,6 @@
                                 </a>
                             </li>
                         @endif
-                        
                         <li>
                             <a href="#" class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('settings.*') ? 'bg-blue-700' : '' }}">
                                 <i class="fas fa-cog mr-2"></i>
@@ -90,13 +99,7 @@
                                 Activity Log
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ route('drug_search.search') }}"
-                               class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('drug_search.*') ? 'bg-blue-700' : '' }}">
-                                <i class="fas fa-search mr-2"></i>
-                                Search Drug
-                            </a>
-                        </li>
+                       
                     </ul>
                 </nav>
 
