@@ -7,6 +7,8 @@ use App\Models\Product;
 use App\Services\DatabaseSwitcher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Carbon;
+
 
 class DrugSearchController extends Controller
 {
@@ -130,5 +132,155 @@ class DrugSearchController extends Controller
             $page,
             ['path' => $request->url(), 'query' => $request->query()]
         );
+    }
+
+    public function trackExpiry(Request $request)
+    {
+        $query = $request->input('query');
+        $perPage = 10;
+        $results = collect();
+    
+        if (!empty($query)) {
+            \Log::info("Searching for query: {$query}");
+            $pharmacies = Pharmacy::select('id', 'name', 'location')->get();
+    
+            foreach ($pharmacies as $pharmacy) {
+                try {
+                    \Log::info("Switching to pharmacy: {$pharmacy->id}");
+                    $this->databaseSwitcher->switchToPharmacy($pharmacy->id);
+    
+                    \Log::info("Current database: " . \DB::connection('pharmacy_dynamic')->getDatabaseName());
+    
+                    // Fetch products and their batches without aggregating
+                    $products = Product::on('pharmacy_dynamic')
+                        ->select('products.*')
+                        ->where('is_active', 1)
+                        ->where(function ($q) use ($query) {
+                            $q->where('name', 'LIKE', "%{$query}%")
+                              ->orWhere('code', 'LIKE', "%{$query}%");
+                        })
+                        ->with(['unit', 'batches' => function ($query) {
+                            $query->select('product_batches.*');
+                        }])
+                        ->get();
+    
+                    \Log::info("Found {$products->count()} products in pharmacy {$pharmacy->id} for query: {$query}", [
+                        'products' => $products->toArray()
+                    ]);
+    
+                    // Process each batch individually
+                    $batchResults = collect();
+                    foreach ($products as $product) {
+                        if ($product->batches->isEmpty()) {
+                            // If no batches, add a placeholder entry
+                            $batchResults->push([
+                                'product' => $product,
+                                'pharmacy' => $pharmacy,
+                                'batch_no' => null,
+                                'earliest_expired_date' => null,
+                                'quantity' => 0,
+                                'remaining_months' => null,
+                                'remaining_days_after_months' => null,
+                                'flag_color' => 'gray',
+                            ]);
+                            continue;
+                        }
+    
+                        foreach ($product->batches as $batch) {
+                            \Log::info("Processing batch {$batch->batch_no} for product {$product->id} in pharmacy {$pharmacy->id}", [
+                                'batch_id' => $batch->id,
+                                'product_id' => $product->id,
+                                'name' => $product->name,
+                                'earliest_expired_date' => $batch->expired_date,
+                                'quantity' => $batch->qty
+                            ]);
+    
+                            $remainingMonths = null;
+                            $remainingDaysAfterMonths = null;
+                            $flagColor = 'gray';
+    
+                            if ($batch->expired_date) {
+                                try {
+                                    $expiryDate = Carbon::parse($batch->expired_date);
+                                    $now = Carbon::now();
+    
+                                    \Log::info("Expiry check for batch {$batch->batch_no} of product {$product->id}", [
+                                        'earliest_expired_date' => $batch->expired_date,
+                                        'parsed_expiry' => $expiryDate->toDateTimeString(),
+                                        'now' => $now->toDateTimeString(),
+                                        'is_past' => $expiryDate->lte($now)
+                                    ]);
+    
+                                    if ($expiryDate->lte($now)) {
+                                        \Log::info("Batch {$batch->batch_no} of product {$product->id} in pharmacy {$pharmacy->id} is expired", [
+                                            'expiry_date' => $batch->expired_date
+                                        ]);
+                                        $flagColor = 'red';
+                                        $remainingMonths = null;
+                                        $remainingDaysAfterMonths = null;
+                                    } else {
+                                        $remainingMonths = (int)$now->diffInMonths($expiryDate, false);
+                                        $tempDate = $now->copy()->addMonths($remainingMonths);
+                                        $remainingDaysAfterMonths = (int)$tempDate->diffInDays($expiryDate, false);
+    
+                                        if ($remainingDaysAfterMonths < 0) {
+                                            \Log::warning("Negative days detected for batch {$batch->batch_no} of product {$product->id}, marking as expired", [
+                                                'remaining_days' => $remainingDaysAfterMonths
+                                            ]);
+                                            $remainingMonths = null;
+                                            $remainingDaysAfterMonths = null;
+                                            $flagColor = 'red';
+                                        } else {
+                                            if ($remainingMonths <= 3) {
+                                                $flagColor = 'red';
+                                            } elseif ($remainingMonths <= 6) {
+                                                $flagColor = 'yellow';
+                                            } else {
+                                                $flagColor = 'green';
+                                            }
+                                        }
+                                    }
+                                } catch (\Exception $e) {
+                                    \Log::error("Failed to parse expiry date for batch {$batch->batch_no} of product {$product->id}: {$e->getMessage()}");
+                                    $flagColor = 'gray';
+                                    $remainingMonths = null;
+                                    $remainingDaysAfterMonths = null;
+                                }
+                            }
+    
+                            $batchResults->push([
+                                'product' => $product,
+                                'pharmacy' => $pharmacy,
+                                'batch_no' => $batch->batch_no,
+                                'earliest_expired_date' => $batch->expired_date,
+                                'quantity' => $batch->qty,
+                                'remaining_months' => $remainingMonths,
+                                'remaining_days_after_months' => $remainingDaysAfterMonths,
+                                'flag_color' => $flagColor,
+                            ]);
+                        }
+                    }
+    
+                    $results = $results->merge($batchResults);
+                } catch (\Exception $e) {
+                    \Log::error("Failed to query expiry dates for pharmacy {$pharmacy->id}: {$e->getMessage()}");
+                } finally {
+                    $this->databaseSwitcher->switchToMain();
+                }
+            }
+    
+            $products = $this->paginateCollection($results, $perPage, $request)
+                ->appends(['query' => $query]);
+    
+            $searchHistory = Session::get('drug_search_history', []);
+            if (!in_array($query, $searchHistory)) {
+                $searchHistory[] = $query;
+                Session::put('drug_search_history', $searchHistory);
+            }
+        } else {
+            $products = $this->paginateCollection($results, $perPage, $request);
+        }
+    
+        return view('drugs.track_expiry', compact('products', 'query'));
     }
 }

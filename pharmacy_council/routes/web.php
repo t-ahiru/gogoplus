@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\DataRequestController;
+use App\Http\Controllers\SalesTrendController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CouncilUserController;
 use App\Http\Controllers\DrugSearchController;
@@ -33,6 +34,17 @@ Route::get('/dashboard', function () {
     Route::get('/drugs/search/history', [DrugSearchController::class, 'history'])->name('drug_search.history');
     Route::post('/drugs/search/history/clear', [DrugSearchController::class, 'clearHistory'])->name('drug_search.clear_history');
     Route::get('/drugs/details/{product_id}/{pharmacy_id}', [DrugSearchController::class, 'details'])->name('drug_search.details');
+
+        //Track Expiry
+    Route::get('/drugs/track-expiry', [DrugSearchController::class, 'trackExpiry'])->name('drug_search.track_expiry');
+
+
+    // Sales Trend  
+    // routes/web.php
+
+
+Route::get('/drugs/sales-trend', [SalesTrendController::class, 'index'])->name('sales.trend');
+Route::post('/drugs/sales-trend/data', [SalesTrendController::class, 'fetchSalesData'])->name('sales.trend.data');
 
             //Data Requests 
             Route::get('/data-requests/create', [DataRequestController::class, 'create'])->name('data_requests.create')->middleware('auth');

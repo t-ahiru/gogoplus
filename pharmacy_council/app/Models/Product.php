@@ -68,6 +68,11 @@ class Product extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
+    public function batches()
+    {
+        return $this->hasMany(ProductBatch::class, 'product_id', 'id');
+    }
+
     /**
      * Get the brand associated with the product.
      */
@@ -90,5 +95,10 @@ class Product extends Model
     public function unit()
     {
         return $this->belongsTo(Unit::class, 'unit_id');
+    }
+
+    public function productSales()
+    {
+        return $this->hasMany(ProductSale::class, 'product_id');
     }
 }

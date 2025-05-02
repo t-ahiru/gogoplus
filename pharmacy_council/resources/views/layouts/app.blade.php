@@ -72,11 +72,23 @@
 
                         <li>
                             <a href="{{ route('drug_search.search') }}"
-                               class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('drug_search.*') ? 'bg-blue-700' : '' }}">
+                               class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('drug_search.search') ? 'bg-blue-700' : '' }}">
                                 <i class="fas fa-search mr-2"></i>
                                 Search Drug
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('drug_search.track_expiry') }}"
+                               class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('drug_search.track_expiry') ? 'bg-blue-700' : '' }}">
+                                <i class="fas fa-calendar mr-2"></i>
+                                Track Expiry
+                            </a>
+                        </li>
+                        <a href="{{ route('sales.trend') }}"
+   class="flex items-center p-2 rounded hover:bg-blue-400 transition-colors {{ request()->routeIs('sales.trend') ? 'bg-blue-700' : '' }}">
+    <i class="fas fa-chart-line mr-2"></i>
+    Sales Trend
+</a>
                         <!-- Data Requests (only for role_id === 1) -->
                         @if ($user && $user->role_id === 1)
                             <li>
