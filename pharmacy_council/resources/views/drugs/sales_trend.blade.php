@@ -9,7 +9,7 @@
         
         <form id="salesForm" action="{{ route('sales.trend.data') }}" method="POST" class="space-y-4">
             @csrf
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label for="drugName" class="block text-sm font-medium text-gray-700 mb-1">Drug Name</label>
                     <input 
@@ -38,17 +38,37 @@
                 </div>
                 
                 <div>
-                    <label for="timeFrame" class="block text-sm font-medium text-gray-700 mb-1">Time Frame</label>
+                    <label for="month" class="block text-sm font-medium text-gray-700 mb-1">Month</label>
                     <select 
-                        id="timeFrame" 
-                        name="timeFrame" 
+                        id="month" 
+                        name="month" 
                         required
                         class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
                     >
-                        <option value="7">Last 7 Days</option>
-                        <option value="30">Last 30 Days</option>
-                        <option value="90">Last 90 Days</option>
-                        <option value="365">Last 1 Year</option>
+                        <option value="">-- Select Month --</option>
+                        @foreach([
+                            '01' => 'January', '02' => 'February', '03' => 'March', 
+                            '04' => 'April', '05' => 'May', '06' => 'June',
+                            '07' => 'July', '08' => 'August', '09' => 'September',
+                            '10' => 'October', '11' => 'November', '12' => 'December'
+                        ] as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="year" class="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                    <select 
+                        id="year" 
+                        name="year" 
+                        required
+                        class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+                    >
+                        <option value="">-- Select Year --</option>
+                        @for($year = date('Y'); $year >= 2023; $year--)
+                            <option value="{{ $year }}">{{ $year }}</option>
+                        @endfor
                     </select>
                 </div>
             </div>
@@ -71,147 +91,31 @@
     </div>
 </div>
 @endsection
-
 @section('scripts')
-<!-- Using Chart.js from CDN with fallback -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    // Wait for DOM to be fully loaded
+<script type="module">
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('salesForm');
-        const errorContainer = document.getElementById('chartError');
         
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            errorContainer.classList.add('hidden');
-            
-            // Show loading state
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Loading...';
-            submitBtn.disabled = true;
-            
-            try {
-                const formData = new FormData(form);
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-                    }
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Failed to fetch data');
-                }
-                
-                const data = await response.json();
-                
-                if (data.status === 'error') {
-                    throw new Error(data.message);
-                }
-                
-                renderChart(data, formData.get('drugName'), data.pharmacyName);
-                
-            } catch (error) {
-                console.error('Error:', error);
-                errorContainer.textContent = error.message;
-                errorContainer.classList.remove('hidden');
-            } finally {
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-            }
-        });
-        
-        function renderChart(data, drugName, pharmacyName) {
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            
-            // Destroy previous chart if exists
-            if (window.salesChart) {
-                window.salesChart.destroy();
-            }
-            
-            // Find the maximum non-zero value for scaling
-            const maxValue = Math.max(...data.quantities.filter(q => q > 0));
-            
-            window.salesChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.dates,
-                    datasets: [{
-                        label: `Sales of ${drugName} at ${pharmacyName}`,
-                        data: data.quantities,
-                        borderColor: 'rgba(79, 70, 229, 1)',
-                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                        borderWidth: 2,
-                        pointBackgroundColor: function(context) {
-                            return context.raw > 0 ? 'rgba(79, 70, 229, 1)' : 'rgba(200, 200, 200, 0.5)';
-                        },
-                        pointRadius: function(context) {
-                            return context.raw > 0 ? 5 : 2;
-                        },
-                        pointHoverRadius: 6,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                font: {
-                                    size: 14
-                                }
-                            }
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.dataset.label}: ${context.raw}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Date',
-                                font: {
-                                    weight: 'bold'
-                                }
-                            },
-                            grid: {
-                                display: false
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Quantity Sold',
-                                font: {
-                                    weight: 'bold'
-                                }
-                            },
-                            beginAtZero: false,
-                            suggestedMin: 0,
-                            suggestedMax: maxValue > 0 ? maxValue * 1.2 : 100,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        }
-                    }
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
                 }
             });
-        }
+            
+            const data = await response.json();
+            
+            // Update chart via Alpine component
+            const chartComponent = document.querySelector('[x-data="salesChart"]');
+            if (chartComponent) {
+                chartComponent.__x.updateChart(data);
+            }
+        });
     });
 </script>
 @endsection
