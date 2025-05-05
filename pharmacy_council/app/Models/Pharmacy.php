@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use App\Services\DatabaseSwitcher;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class Pharmacy extends Model
 {
@@ -23,6 +21,7 @@ class Pharmacy extends Model
         'location',
         'contact_phone',
         'contact_email',
+        'database_connection',
         'api_endpoint',
         'api_key',
         'api_status',
@@ -44,18 +43,7 @@ class Pharmacy extends Model
      */
     public function users()
     {
-        // Dynamically switch to the pharmacy database
-        $databaseSwitcher = app(DatabaseSwitcher::class);
-        $databaseSwitcher->switchToPharmacy($this->id);
-
-        try {
-            // Query users from the pharmacy-specific database
-            $users = User::on('pharmacy_dynamic')->get();
-            return $users;
-        } finally {
-            // Always switch back to the main database
-            $databaseSwitcher->switchToMain();
-        }
+        return $this->hasMany(User::class);
     }
 
     /**
@@ -101,20 +89,5 @@ class Pharmacy extends Model
     public function scopeWithActiveApi($query)
     {
         return $query->where('api_status', 'active');
-    }
-
-    /**
-     * Get the database name for this pharmacy.
-     *
-     * @return string
-     */
-    public function getDatabaseNameAttribute(): string
-    {
-        return 'pharmacy' . $this->id;
-    }
-
-    public function getAuthPassword()
-    {
-          return $this->api_key;
     }
 }

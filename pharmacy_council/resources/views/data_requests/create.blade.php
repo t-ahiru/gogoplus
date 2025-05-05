@@ -25,7 +25,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('data_requests.store') }}" method="POST" class="space-y-6">
+            <form action="{{ route('data_requests.send') }}" method="POST" class="space-y-6">
                 @csrf
                 
                 <!-- Pharmacy Selection -->
@@ -62,17 +62,5 @@
                 </button>
             </form>
         </div>
-
-        @if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
-
-@if (session('error'))
-    <div class="alert alert-danger">
-        {{ session('error') }}
-    </div>
-@endif
     </div>
 @endsection

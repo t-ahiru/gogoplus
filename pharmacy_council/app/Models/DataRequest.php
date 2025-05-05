@@ -1,25 +1,24 @@
 <?php
 
-  namespace App\Models;
+namespace App\Models;
 
-  use Illuminate\Database\Eloquent\Factories\HasFactory;
-  use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-  class DataRequest extends Model
-  {
-      use HasFactory;
+class DataRequest extends Model
+{
+    use HasFactory;
 
-      protected $fillable = [
-          'pharmacy_id',
-          'request_type',
-          'details',
-          'status',
-          'response_data',
-          'file_path',
-      ];
+    protected $fillable = [
+        'pharmacy_id',
+        'request_type',
+        'details',
+        'status',
+        'response_data',
+    ];
 
-      public function pharmacy()
-      {
-          return $this->belongsTo(Pharmacy::class);
-      }
-  }
+    public function pharmacy()
+    {
+        return $this->belongsTo(Pharmacy::class);
+    }
+}
