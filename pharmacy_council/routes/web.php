@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\DrugSearchController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CouncilUserController;
 use App\Http\Controllers\DrugController;
 use App\Http\Controllers\PharmacyRecordsController;
+use App\Http\Controllers\SalesTrendController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\DataRequestController;
@@ -37,9 +39,47 @@ Route::get('/settings', [SettingsController::class, 'index'])->name('settings.in
 Route::get('/activity', [ActivityLogController::class, 'index'])->name('activity.index')->middleware('auth');
 
 Route::get('/data-requests/create', [DataRequestController::class, 'create'])->name('data_requests.create')->middleware('auth');
-Route::post('/data-requests', [DataRequestController::class, 'store'])->name('data_requests.store')->middleware('auth');
+Route::post('/data-requests', [DataRequestController::class, 'sendRequest'])->name('data_requests.store')->middleware('auth');
+Route::get('/data-requests', [DataRequestController::class, 'index'])->name('data_requests.index')->middleware('auth');
+Route::get('/data-requests/{id}/share', [DataRequestController::class, 'shareForm'])->name('data_requests.share.form')->middleware('auth');
+Route::post('/data-requests/{id}/share', [DataRequestController::class, 'share'])->name('data_requests.share')->middleware('auth');
+Route::get('/shared-data-requests', [DataRequestController::class, 'shared'])->name('data_requests.shared')->middleware('auth');
 
 Auth::routes();
+
+  // Drug Search Route
+  Route::get('/drugs/search', [DrugSearchController::class, 'search'])->name('drug_search.search');
+  Route::get('/drugs/search/history', [DrugSearchController::class, 'history'])->name('drug_search.history');
+  Route::post('/drugs/search/history/clear', [DrugSearchController::class, 'clearHistory'])->name('drug_search.clear_history');
+  Route::get('/drugs/details/{product_id}/{pharmacy_id}', [DrugSearchController::class, 'details'])->name('drug_search.details');
+
+     //Track Expiry
+     Route::get('/drugs/track-expiry', [DrugSearchController::class, 'trackExpiry'])->name('drug_search.track_expiry');
+
+      // Sales Trend  
+    // routes/web.php
+
+
+Route::get('/drugs/sales-trend', [SalesTrendController::class, 'index'])->name('sales.trend');
+Route::post('/drugs/sales-trend/data', [SalesTrendController::class, 'fetchSalesData'])->name('sales.trend.data');
+
+      //Data Requests 
+      Route::get('/data-requests/create', [DataRequestController::class, 'create'])->name('data_requests.create')->middleware('auth');
+      Route::post('/data-requests', [DataRequestController::class, 'sendRequest'])->name('data_requests.store')->middleware('auth');
+      Route::get('/data-requests', [DataRequestController::class, 'index'])->name('data_requests.index')->middleware('auth');
+      Route::get('/data-requests/{id}/share', [DataRequestController::class, 'shareForm'])->name('data_requests.share.form')->middleware('auth');
+      Route::post('/data-requests/{id}/share', [DataRequestController::class, 'share'])->name('data_requests.share')->middleware('auth');
+      Route::get('/shared-data-requests', [DataRequestController::class, 'shared'])->name('data_requests.shared')->middleware('auth');
+
+
+      Route::get('/notifications', function () {
+        return view('notifications');
+    })->name('notifications')->middleware('auth');
+    
+    Route::post('/notifications/{id}/mark-as-read', function ($id) {
+        auth()->user()->notifications()->findOrFail($id)->markAsRead();
+        return redirect()->back()->with('success', 'Notification marked as read.');
+    })->name('notifications.mark-as-read')->middleware('auth');
 
 Route::resource('council_user', CouncilUserController::class)->middleware(['auth']);
 Route::get('/council_user', [CouncilUserController::class, 'index'])->name('council_user.index');

@@ -2,22 +2,19 @@
 
 namespace App\Providers;
 
+use App\Services\DatabaseSwitcher;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
+    public function register()
     {
-        //
+        $this->app->singleton(DatabaseSwitcher::class, function ($app) {
+            return new DatabaseSwitcher();
+        });
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
+    public function boot()
     {
         //
     }
