@@ -20,6 +20,15 @@ use App\Http\Controllers\AuditTrailController;
 
 Route::get('/pharmacy/purchase-records', [PharmacyPurchaseRecordsController::class, 'index'])->name('pharmacy.purchase-records');
 Route::get('/pharmacy/purchase-records/warehouses', [PharmacyPurchaseRecordsController::class, 'getWarehouses'])->name('pharmacy.purchase-records.warehouses');
+Route::get('/pharmacy/purchase-records/products', [PharmacyPurchaseRecordsController::class, 'searchProducts'])->name('pharmacy.purchase-records.products');
+Route::get('/pharmacy/purchase-records/fetch', [PharmacyPurchaseRecordsController::class, 'fetchPurchaseRecords'])->name('pharmacy.purchase-records.fetch');
+Route::get('/pharmacy/purchase-records', [PharmacyPurchaseRecordsController::class, 'index'])->name('pharmacy.purchase-records');
+Route::get('/pharmacy/purchase-records/warehouses', [PharmacyPurchaseRecordsController::class, 'getWarehouses'])->name('pharmacy.purchase-records.warehouses');
+Route::get('/pharmacy/purchase-records/products', [PharmacyPurchaseRecordsController::class, 'searchProducts'])->name('pharmacy.purchase-records.products');
+Route::get('/pharmacy/purchase-records/fetch', [PharmacyPurchaseRecordsController::class, 'fetchPurchaseRecords'])->name('pharmacy.purchase-records.fetch');
+
+Route::get('/pharmacy/purchase-records', [PharmacyPurchaseRecordsController::class, 'index'])->name('pharmacy.purchase-records');
+Route::get('/pharmacy/purchase-records/warehouses', [PharmacyPurchaseRecordsController::class, 'getWarehouses'])->name('pharmacy.purchase-records.warehouses');
 Route::get('/pharmacy/purchase-records/fetch', [PharmacyPurchaseRecordsController::class, 'fetchPurchaseRecords'])->name('pharmacy.purchase-records.fetch');
 Route::get('/pharmacy/purchase-records', [PharmacyPurchaseRecordsController::class, 'index'])->name('pharmacy.purchase-records');
 Route::get('/pharmacy/purchase-records/warehouses', [PharmacyPurchaseRecordsController::class, 'getWarehouses'])->name('pharmacy.purchase-records.warehouses');

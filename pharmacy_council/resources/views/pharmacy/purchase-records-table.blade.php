@@ -13,7 +13,7 @@
     <tbody>
         @if (!$purchaseRecords || $purchaseRecords->isEmpty())
             <tr>
-                <td colspan="7">No purchase records found for the selected filters. Try adjusting the date range or drug selection.</td>
+                <td colspan="7">No purchase records found.</td>
             </tr>
         @else
             @foreach ($purchaseRecords as $record)
