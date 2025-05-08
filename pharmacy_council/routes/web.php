@@ -14,6 +14,15 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuditTrailController;
 
+ 
+
+Route::get('/pharmacy/purchase-records', [PharmacyPurchaseRecordsController::class, 'index'])->name('pharmacy.purchase-records');
+Route::get('/pharmacy/purchase-records/warehouses', [PharmacyPurchaseRecordsController::class, 'getWarehouses'])->name('pharmacy.purchase-records.warehouses');
+Route::get('/pharmacy/purchase-records/fetch', [PharmacyPurchaseRecordsController::class, 'fetchPurchaseRecords'])->name('pharmacy.purchase-records.fetch');
+Route::get('/pharmacy/purchase-records', [PharmacyPurchaseRecordsController::class, 'index'])->name('pharmacy.purchase-records');
+Route::get('/pharmacy/purchase-records/warehouses', [PharmacyPurchaseRecordsController::class, 'getWarehouses'])->name('pharmacy.purchase-records.warehouses');
+Route::get('/pharmacy/purchase-records/products', [PharmacyPurchaseRecordsController::class, 'searchProducts'])->name('pharmacy.purchase-records.products');
+Route::get('/pharmacy/purchase-records/fetch', [PharmacyPurchaseRecordsController::class, 'fetchPurchaseRecords'])->name('pharmacy.purchase-records.fetch');
 Route::get('/audit-trail', [AuditTrailController::class, 'index'])->name('audit-trail.index');
 Route::get('/audit-trail/{id}/edit', [AuditTrailController::class, 'edit'])->name('audit-trail.edit');
 Route::delete('/audit-trail/{id}', [AuditTrailController::class, 'destroy'])->name('audit-trail.destroy');
