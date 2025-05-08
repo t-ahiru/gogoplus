@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Warehouse extends Model
 {
-    protected $connection = 'dynamic_connection'; // Matches the pharmacy database connection
     protected $table = 'warehouses';
+    protected $connection = null; // Ensure no hardcoded connection
 }

@@ -13,6 +13,7 @@ class AuditTrailController extends Controller
 {
     public function index(Request $request)
     {
+        
         // Fetch pharmacies for display in the UI
         $pharmacies = DB::connection('pharmacy_main')
             ->table('pharmacies')
@@ -75,4 +76,5 @@ class AuditTrailController extends Controller
         return view('audit-trail.index', compact('auditLogsPaginated', 'users', 'pharmacies', 'warehouses'))
             ->with('header', 'Audit Trail');
     }
-}
+};
+
